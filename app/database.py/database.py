@@ -5,4 +5,4 @@ DATABASE_URL = "postgresql://postgres:804007@localhost:5432/padaria_db"
 
 engine = create_engine(DATABASE_URL)
 
-Sessionlocal = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(bind=engine)

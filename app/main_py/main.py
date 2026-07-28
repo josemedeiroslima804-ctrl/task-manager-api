@@ -3,7 +3,7 @@ app = FastAPI()
 
 @app.get("/")
 def home():
-    return {"message": "olá, mundo!"}
+    return {"message": "API Sistema de Padaria"}
 
 @app.get("/sobre")
 def sobre ():
