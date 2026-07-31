@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class Produto(BaseModel):
+class ProdutoSchema(BaseModel):
     nome: str
     preco: float
     estoque: int
