@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.database import engine, SessionLocal
 from app.models.produto import Base, Produto as ProdutoModel
 from app.schemas.produto import ProdutoSchema
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -75,7 +76,7 @@ def buscar_produto(produto_id : int) :
 
     return produto
 
-""" O código abaixo serve para deletar produtos específicos """
+""" O código abaixo serve para deletar produtos """
 
 @app.delete ("/produtos/{produto_id}")
 def deletar_produtos(produto_id: int):
@@ -92,3 +93,32 @@ def deletar_produtos(produto_id: int):
     db.close()
 
     return {"mensagem": "Produto excluído com sucesso!"}
+
+""" Função para atualizar produtos"""
+
+@app.put("/produtos/{produto_id}")
+def atualizar_produto(produto_id: int, produto: ProdutoSchema):
+
+    db = SessionLocal()
+
+    produto_db = db.query(ProdutoModel).filter(
+        ProdutoModel.id == produto_id
+    ).first()
+
+    if produto_db is None:
+        db.close()
+        raise HTTPException(
+            status_code=404,
+            detail="Produto não encontrado."
+        )
+
+    produto_db.nome = produto.nome
+    produto_db.preco = produto.preco
+    produto_db.estoque = produto.estoque
+
+    db.commit()
+    db.refresh(produto_db)
+
+    db.close()
+
+    return produto_db
