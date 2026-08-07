@@ -4,10 +4,13 @@ from app.dependencies import get_db
 from app.models.produto import Produto as ProdutoModel
 from app.schemas.produto import ProdutoCreate, ProdutoResponse
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/produtos",
+    tags=["Produtos"]
+)
 
 @router.post(
-        "/produtos",
+        "",
         response_model=ProdutoResponse,
         status_code=201
         )
@@ -35,7 +38,7 @@ def criar_produto(
     return novo_produto
 
 @router.get(
-        "/produtos",
+        "",
         response_model=list[ProdutoResponse]
         )
 
@@ -51,7 +54,7 @@ def listar_produtos(
 """ Filtro de Produtos """
 
 
-@router.get("/produtos/{produto_id}",
+@router.get("/{produto_id}",
             response_model=ProdutoResponse
             )
 
@@ -75,7 +78,7 @@ def buscar_produto(produto_id : int,
 """ O código abaixo serve para deletar produtos """
 
 
-@router.delete ("/produtos/{produto_id}",
+@router.delete ("/{produto_id}",
                 status_code=204
                 )
 
@@ -102,7 +105,7 @@ def deletar_produtos(produto_id: int,
 """ Função para atualizar produtos"""
 
 
-@router.put("/produtos/{produto_id}",
+@router.put("/{produto_id}",
             response_model= ProdutoResponse
             )
 

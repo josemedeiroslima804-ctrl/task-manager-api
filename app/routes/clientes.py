@@ -4,10 +4,13 @@ from app.dependencies import get_db
 from app.models.clientes import Cliente as ClienteModel
 from app.schemas.clientes import ClienteCreate, ClienteResponse
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/clientes",
+    tags=["Clientes"]
+)
 
 @router.post(
-        "/clientes",
+        "",
         response_model=ClienteResponse,
         status_code=201
         )
@@ -30,7 +33,7 @@ def novo_cliente(
     return novo_cliente
 
 @router.get(
-        "/clientes",
+        "",
         response_model=list[ClienteResponse]
         )
 
