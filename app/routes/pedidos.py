@@ -5,8 +5,9 @@ from app.models.pedidos import Pedido as PedidoModel
 from app.models.clientes import Cliente as ClienteModel
 from app.models.produto import Produto as ProdutoModel
 
-from app.schemas.pedidos import PedidoCreate, PedidoResponse
+from app.schemas.pedidos import ( PedidoCreate, PedidoResponse, PedidoDetalhado)
 
+from sqlalchemy.orm import joinedload   
 
 router = APIRouter(
     prefix="/pedidos",
@@ -44,6 +45,12 @@ def novo_pedido(
             status_code=404,
             detail="Produto não encontrado."
         )
+    #Verifica o estoque
+    if produto.estoque < pedido.quantidade:
+        raise HTTPException(
+            status_code=400,
+            detail="Estoque insuficiente."
+        )
 
     # Cria o pedido
     novo_pedido = PedidoModel(
@@ -51,9 +58,73 @@ def novo_pedido(
         produto_id=pedido.produto_id,
         quantidade=pedido.quantidade
     )
+    #Atualiza o estoque
+    produto.estoque -= pedido.quantidade 
 
     db.add(novo_pedido)
     db.commit()
     db.refresh(novo_pedido)
 
     return novo_pedido
+
+#Lista Pedidos
+
+@router.get(
+        "",
+        response_model=list[PedidoDetalhado]
+        )
+def listar_pedidos(
+    db = Depends(get_db)
+):
+    pedidos = db.query(PedidoModel).options(
+        joinedload(PedidoModel.cliente),
+        joinedload(PedidoModel.produto)
+    ).all()
+
+    return pedidos
+
+#Busca Pedido
+
+@router.get("/{pedido_id}",
+            response_model=PedidoResponse
+            )
+
+def buscar_pedido(
+    pedido_id: int,
+    db = Depends(get_db)
+):
+    
+    pedido = db.query(PedidoModel).filter(
+        PedidoModel.id == pedido_id
+    ).first()
+
+    if pedido is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Pedido não encontrado."
+        )
+
+    return pedido
+
+#Deleta Pedido
+
+@router.delete("/{pedido_id}")
+def deletar_pedido(
+    pedido_id: int,
+    db = Depends(get_db)
+):
+    
+    pedido = db.query(PedidoModel).filter(
+        PedidoModel.id == pedido_id
+    ).first()
+
+    if pedido is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Pedido não encontrado."
+        )
+
+    db.delete(pedido)
+    db.commit()
+
+    return {"mensagem": "Pedido excluído com sucesso!"}

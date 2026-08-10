@@ -24,10 +24,7 @@ class Pedido(Base):
     quantidade = Column(Integer, nullable=False)
 
 
-    cliente = relationship("Cliente",
-                           back_populates="pedidos")
+    cliente = relationship("Cliente", back_populates="pedidos")
 
 
-    produto = relationship("Produto",
-                            back_populates="pedidos"
-                            )
+    produto = relationship("Produto", back_populates="pedidos")

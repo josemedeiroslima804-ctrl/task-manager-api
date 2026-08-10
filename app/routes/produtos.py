@@ -37,6 +37,8 @@ def criar_produto(
 
     return novo_produto
 
+#Lista Produtos
+
 @router.get(
         "",
         response_model=list[ProdutoResponse]
@@ -51,7 +53,7 @@ def listar_produtos(
     return produtos
 
 
-""" Filtro de Produtos """
+# Busca um Produto
 
 
 @router.get("/{produto_id}",
@@ -75,11 +77,11 @@ def buscar_produto(produto_id : int,
     return produto
 
 
-""" O código abaixo serve para deletar produtos """
+# Deleta um Produto
 
 
 @router.delete ("/{produto_id}",
-                status_code=204
+                
                 )
 
 def deletar_produtos(produto_id: int,
