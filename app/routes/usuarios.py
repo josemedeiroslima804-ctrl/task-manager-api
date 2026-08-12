@@ -6,6 +6,15 @@ from app.security import hash_password
 from app.models.usuarios import Usuario as UsuarioModel
 from app.schemas.usuarios import UsuarioCreate, UsuarioResponse
 
+from fastapi.security import OAuth2PasswordRequestForm
+
+from app.security import (
+    verify_password,
+    create_access_token
+)
+
+from app.schemas.usuarios import Token
+
 router = APIRouter(
     prefix="/usuarios",
     tags=["Usuários"]
@@ -32,3 +41,34 @@ def criar_usuario(usuario: UsuarioCreate, db=Depends(get_db)):
     db.refresh(novo_usuario)
 
     return novo_usuario
+
+@router.post("/login",
+              response_model=Token
+              )
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+      db=Depends(get_db)
+      ):
+
+    usuario = db.query(UsuarioModel).filter(UsuarioModel.email == form_data.username).first()
+
+    if usuario is None:
+        raise HTTPException(
+            status_code=401,
+            detail="Email ou senha inválidos"
+            )
+
+    if not verify_password(form_data.password, usuario.senha):
+        raise HTTPException(
+            status_code=401,
+            detail="Email ou senha inválidos"
+            )
+    access_token = create_access_token(data={
+        "sub": usuario.email}
+        )
+
+    return Token(
+        access_token=access_token,
+        token_type="bearer"
+    )
+
