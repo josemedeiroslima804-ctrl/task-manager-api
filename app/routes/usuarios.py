@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.dependencies import get_db
+from app.dependencies import get_db, get_current_user
 from app.security import hash_password
 
 from app.models.usuarios import Usuario as UsuarioModel
@@ -72,3 +72,15 @@ def login(
         token_type="bearer"
     )
 
+@router.get(
+    "",
+    response_model=list[UsuarioResponse]
+)
+def listar_usuarios(
+    db=Depends(get_db),
+    usuario_atual=Depends(get_current_user)
+):
+    
+    usuarios = db.query(UsuarioModel).all()
+
+    return usuarios

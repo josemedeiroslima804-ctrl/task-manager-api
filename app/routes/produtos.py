@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.dependencies import get_db
+from app.dependencies import get_db, get_current_user
 
 from app.models.produto import Produto as ProdutoModel
 from app.schemas.produto import ProdutoCreate, ProdutoResponse
@@ -45,8 +45,10 @@ def criar_produto(
         )
 
 def listar_produtos( 
-    db = Depends(get_db)
+    db = Depends(get_db),
+    usuario_atual =Depends(get_current_user)
 ):
+    
 
     produtos = db.query(ProdutoModel).all()
 
