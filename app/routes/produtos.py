@@ -3,6 +3,7 @@ from app.dependencies import get_db, get_current_user
 
 from app.models.produto import Produto as ProdutoModel
 from app.schemas.produto import ProdutoCreate, ProdutoResponse
+from app.services import produtos as produto_service
 
 router = APIRouter(
     prefix="/produtos",
@@ -14,30 +15,17 @@ router = APIRouter(
         response_model=ProdutoResponse,
         status_code=201
         )
+
 def criar_produto(
     produto: ProdutoCreate,
-    db = Depends(get_db)
+    db=Depends(get_db),
+    usuario_atual=Depends(get_current_user)
 ):
 
-    novo_produto = ProdutoModel(
-        nome=produto.nome,
-        preco=produto.preco,
-        estoque=produto.estoque
+    return produto_service.criar_produto(
+        db,
+        produto
     )
-
-# Marca o objeto para ser inserido no banco
-    db.add(novo_produto)
-
-# Confirma a transação e grava o produto no banco
-    db.commit()
-
-# Atualiza o objeto com o ID gerado pelo banco
-    db.refresh(novo_produto)
-
-
-    return novo_produto
-
-#Lista Produtos
 
 @router.get(
         "",
@@ -50,33 +38,26 @@ def listar_produtos(
 ):
     
 
-    produtos = db.query(ProdutoModel).all()
-
-    return produtos
+    return produto_service.listar_produtos(db)
 
 
 # Busca um Produto
 
 
-@router.get("/{produto_id}",
-            response_model=ProdutoResponse
-            )
+@router.get(
+    "/{produto_id}",
+    response_model=ProdutoResponse
+)
+def buscar_produto(
+    produto_id: int,
+    db=Depends(get_db),
+    usuario_atual=Depends(get_current_user)
+):
 
-def buscar_produto(produto_id : int,
-                   db = Depends(get_db)):
-
-
-    produto = db.query(ProdutoModel).filter(
-        ProdutoModel.id == produto_id
-    ).first()
-
-    if produto is None:
-        raise HTTPException(
-            status_code=404,
-            detail= "Produto não encontrado"
-            )
-
-    return produto
+    return produto_service.buscar_produto(
+        db,
+        produto_id
+    )
 
 
 # Deleta um Produto
