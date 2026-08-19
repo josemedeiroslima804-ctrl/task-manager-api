@@ -40,3 +40,46 @@ def buscar_produto(db: Session, produto_id: int):
         )
 
     return produto
+
+def atualizar_produto(
+        db:Session,
+        produto_id:int,
+        produto: ProdutoCreate
+):
+
+    produto_db = db.query(ProdutoModel).filter(
+        ProdutoModel.id == produto_id
+    ).first()
+
+    if produto_db is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Produto não encontrado."
+        )
+
+    produto_db.nome = produto.nome
+    produto_db.preco = produto.preco
+    produto_db.estoque = produto.estoque
+
+    db.commit()
+    db.refresh(produto_db)
+
+    return produto_db
+
+def deletar_produto(
+        db:Session,
+        produto_id:int
+):
+    produto = db.query(ProdutoModel).filter(
+        ProdutoModel.id == produto_id
+    ).first()
+
+    if produto is None:
+        raise HTTPException(
+            status_code=404,
+            detail= "Produto não encontrado."
+        )
+    db.delete(produto)
+    db.commit()
+
+    return {"Mensagem": "Produto excluído com sucesso!"}
