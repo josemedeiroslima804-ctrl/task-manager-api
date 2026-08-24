@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+
 from app.dependencies import get_db
 
 from app.models.clientes import Cliente as ClienteModel
 from app.schemas.clientes import ClienteCreate, ClienteResponse
+from app.services import clientes as cliente_service
 
 router = APIRouter(
     prefix="/clientes",
@@ -14,23 +17,13 @@ router = APIRouter(
         response_model=ClienteResponse,
         status_code=201
         )
-def novo_cliente(
+
+def criar_cliente(
     cliente: ClienteCreate,
     db = Depends(get_db)
 ):
 
-    novo_cliente = ClienteModel(
-        nome=cliente.nome,
-        email=cliente.email,
-        telefone=cliente.telefone
-    )
-
-    db.add(novo_cliente)
-    db.commit()
-    db.refresh(novo_cliente)
-
-
-    return novo_cliente
+    return cliente_service.criar_cliente(db, Session)
 
 @router.get(
         "",

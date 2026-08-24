@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 from app.dependencies import get_db, get_current_user
-from app.security import hash_password
 
 from app.models.usuarios import Usuario as UsuarioModel
 from app.schemas.usuarios import UsuarioCreate, UsuarioResponse
+
+from app.services import usuarios as usuario_service
 
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -23,64 +25,29 @@ router = APIRouter(
 @router.post("/", response_model=UsuarioResponse, 
              status_code=201)
 
-def criar_usuario(usuario: UsuarioCreate, db=Depends(get_db)):
-    usuario_existente = db.query(UsuarioModel).filter(UsuarioModel.email == usuario.email).first()
+def criar_usuario(
+    usuario: UsuarioCreate,
+    db: Session =Depends(get_db)
+    ):
 
-    if usuario_existente:
-        raise HTTPException(status_code=400,
-                             detail="Email já cadastrado")
-
-    novo_usuario = UsuarioModel(
-        nome=usuario.nome,
-        email=usuario.email,
-        senha=hash_password(usuario.senha)
-    )
-
-    db.add(novo_usuario)
-    db.commit()
-    db.refresh(novo_usuario)
-
-    return novo_usuario
+    return usuario_service.criar_usuario(db, usuario)
 
 @router.post("/login",
               response_model=Token
               )
+
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
-      db=Depends(get_db)
+      db: Session = Depends(get_db)
       ):
-
-    usuario = db.query(UsuarioModel).filter(UsuarioModel.email == form_data.username).first()
-
-    if usuario is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Email ou senha inválidos"
-            )
-
-    if not verify_password(form_data.password, usuario.senha):
-        raise HTTPException(
-            status_code=401,
-            detail="Email ou senha inválidos"
-            )
-    access_token = create_access_token(data={
-        "sub": usuario.email}
-        )
-
-    return Token(
-        access_token=access_token,
-        token_type="bearer"
-    )
+    return usuario_service.login(db,form_data)
 
 @router.get(
     "",
     response_model=list[UsuarioResponse]
 )
-def listar_usuarios(
-    db=Depends(get_db),
-    usuario_atual=Depends(get_current_user)
-):
-    
-    usuarios = db.query(UsuarioModel).all()
 
-    return usuarios
+def listar_usuarios(
+    db: Session = Depends(get_db)
+    ):
+    return usuario_service.listar_usuarios(db)
