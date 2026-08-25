@@ -57,21 +57,23 @@ def criar_pedido(
 def listar_pedidos(
     db: Session
 ):
-    pedidos = db.query(PedidoModel).options(
-        joinedload(PedidoModel.cliente),
-        joinedload(PedidoModel.produto)
-    ).all()
 
-    return pedidos
+
+    return db.query(PedidoModel).options(
+            joinedload(PedidoModel.cliente),
+            joinedload(PedidoModel.produto)
+        ).all()
+
 
 def buscar_pedido(
     pedido_id: int,
     db: Session
 ):
     
-    pedido = db.query(PedidoModel).filter(
-        PedidoModel.id == pedido_id
-    ).first()
+    pedido = db.query(PedidoModel).options(
+        joinedload(PedidoModel.cliente),
+        joinedload(PedidoModel.produto)
+    )
 
     if pedido is None:
         raise HTTPException(

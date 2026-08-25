@@ -1,14 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends
-from app.dependencies import get_db
+from fastapi import APIRouter, Depends
+from app.dependencies import get_db, get_current_user
 
-from app.models.pedidos import Pedido as PedidoModel
-from app.models.clientes import Cliente as ClienteModel
-from app.models.produto import Produto as ProdutoModel
 from app.services import pedidos as pedido_service
 
 from app.schemas.pedidos import ( PedidoCreate, PedidoResponse, PedidoDetalhado)
 
-from sqlalchemy.orm import Session, joinedload   
+from sqlalchemy.orm import Session  
 
 router = APIRouter(
     prefix="/pedidos",
@@ -22,9 +19,10 @@ router = APIRouter(
 )
 def criar_pedido(
     pedido: PedidoCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_atual= Depends(get_current_user)
 ):
-    return pedido_service.criar_pedido(db, Session)
+    return pedido_service.criar_pedido(db, pedido)
 
 #Lista Pedidos
 
@@ -33,12 +31,9 @@ def criar_pedido(
         response_model=list[PedidoDetalhado]
         )
 def listar_pedidos(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_atual=Depends(get_current_user)
 ):
-    pedidos = db.query(PedidoModel).options(
-        joinedload(PedidoModel.cliente),
-        joinedload(PedidoModel.produto)
-    ).all()
 
     return pedido_service.listar_pedidos(db)
 
@@ -50,7 +45,8 @@ def listar_pedidos(
 
 def buscar_pedido(
     pedido_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_atual=Depends(get_current_user)
 ):
     return pedido_service.buscar_pedido(db, pedido_id)
 
@@ -59,6 +55,7 @@ def buscar_pedido(
 @router.delete("/{pedido_id}")
 def deletar_pedido(
     pedido_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_atual=Depends(get_current_user)
 ):
     return pedido_service.deletar_pedido(db, pedido_id)
