@@ -1,9 +1,7 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db
-
-from app.models.clientes import Cliente as ClienteModel
+from app.dependencies import get_db, get_current_user
 from app.schemas.clientes import ClienteCreate, ClienteResponse
 from app.services import clientes as cliente_service
 
@@ -20,10 +18,11 @@ router = APIRouter(
 
 def criar_cliente(
     cliente: ClienteCreate,
-    db = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_atual=Depends(get_current_user)
 ):
 
-    return cliente_service.criar_cliente(db, Session)
+    return cliente_service.criar_cliente(db, cliente)
 
 @router.get(
         "",
@@ -31,33 +30,22 @@ def criar_cliente(
         )
 
 def listar_clientes( 
-    db = Depends(get_db)
+    db = Depends(get_db),
+    usuario_atual=Depends(get_current_user)
 ):
 
-    clientes = db.query(ClienteModel).all()
-
-    return clientes
+    return cliente_service.listar_clientes(db)
 
 
 @router.get( "/{cliente_id}",
              response_model=ClienteResponse
                )
-def buscar_cliente(
-    cliente_id: int,
-      db = Depends(get_db)
-      ):
+def buscar_cliente(cliente_id:int,
+                   db: Session = Depends(get_db),
+                   usuario_atual = Depends(get_current_user)
+                   ):
     
-    cliente = db.query(ClienteModel).filter(
-        ClienteModel.id == cliente_id
-    ).first()
-
-    if cliente is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Cliente não encontrado."
-        )
-
-    return cliente
+    return cliente_service.buscar_cliente(db,cliente_id)
 
 @router.delete(
         "/{cliente_id}"
@@ -65,23 +53,10 @@ def buscar_cliente(
 
 def deletar_cliente(
     cliente_id: int,
-    db = Depends(get_db)
+    db : Session = Depends(get_db),
+    usuario_atual=Depends(get_current_user)
 ):
-    
-    cliente = db.query(ClienteModel).filter(
-        ClienteModel.id == cliente_id
-    ).first()
-
-    if cliente is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Cliente não encontrado."
-        )
-
-    db.delete(cliente)
-    db.commit()
-
-    return {"mensagem": "Cliente excluído com sucesso!"}
+    return cliente_service.deletar_cliente(db, cliente_id)
 
 @router.put(
         "/{cliente_id}",
@@ -91,24 +66,7 @@ def deletar_cliente(
 def atualizar_cliente(
     cliente_id: int,
     cliente: ClienteCreate,
-    db = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_atual = Depends(get_current_user)
 ):
-    
-    cliente_existente = db.query(ClienteModel).filter(
-        ClienteModel.id == cliente_id
-    ).first()
-
-    if cliente_existente is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Cliente não encontrado."
-        )
-
-    cliente_existente.nome = cliente.nome
-    cliente_existente.email = cliente.email
-    cliente_existente.telefone = cliente.telefone
-
-    db.commit()
-    db.refresh(cliente_existente)
-
-    return cliente_existente
+    return cliente_service.atualizar_cliente(db,cliente_id, cliente)
