@@ -10,7 +10,11 @@ from app.routes.usuarios import router as usuarios_router
 
 app = FastAPI(
     title="Sistema de Padaria",
-    version="1.0.0"
+    version="1.0.0",
+    description="""
+API para gerenciamento de produtos, clientes,
+pedidos e usuários de uma padaria.
+"""
 )
 
 Base.metadata.create_all(bind=engine)
@@ -25,7 +29,7 @@ def home():
     return {"message": "Olá, mundo!"}
 
 
-@app.get("/")
+@app.get("/sobre")
 def sobre():
     return {
         "projeto": "Sistema de Padaria",
