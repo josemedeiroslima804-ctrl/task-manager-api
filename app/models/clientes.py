@@ -8,7 +8,7 @@ class Cliente(Base):
     
     id = Column(Integer, primary_key=True)
     nome = Column(String, nullable=False)
-    email = Column(String, nullable=False)
-    telefone = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    telefone = Column(String(20), nullable=False)
     
     pedidos = relationship("Pedido", back_populates="cliente")

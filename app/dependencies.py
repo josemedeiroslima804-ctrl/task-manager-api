@@ -12,9 +12,9 @@ def get_db():
 
     try:
         
-        yield db #confirma se pode estabelecer da conexão
+        yield db
 
-    finally: #executa independente de erro
+    finally:
         db.close()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/usuarios/login")
