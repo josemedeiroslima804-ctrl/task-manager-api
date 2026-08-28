@@ -4,7 +4,7 @@ class PedidoCreate(BaseModel):
 
     cliente_id: int
     produto_id: int
-    quantidade: int
+    quantidade: int 
 
 class PedidoResponse(BaseModel):
 

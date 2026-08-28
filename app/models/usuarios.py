@@ -7,9 +7,9 @@ class Usuario(Base):
 
     id = Column(Integer, primary_key=True)
 
-    nome = Column(String, nullable=False)
+    nome = Column(String(100), nullable=False)
 
-    email = Column(String, unique=True, nullable=False) 
+    email = Column(String(150), unique=True, nullable=False) 
 
-    senha = Column(String, nullable=False)
+    senha = Column(String(255), nullable=False)
     

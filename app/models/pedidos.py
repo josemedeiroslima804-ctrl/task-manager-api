@@ -25,6 +25,4 @@ class Pedido(Base):
 
 
     cliente = relationship("Cliente", back_populates="pedidos")
-
-
     produto = relationship("Produto", back_populates="pedidos")
