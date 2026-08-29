@@ -66,13 +66,15 @@ def listar_pedidos(
 
 
 def buscar_pedido(
-    pedido_id: int,
-    db: Session
+        db:Session,
+        pedido_id: int
 ):
     
-    pedido = db.query(PedidoModel).options(
+    pedido = (
+        db.query(PedidoModel).options(
         joinedload(PedidoModel.cliente),
         joinedload(PedidoModel.produto)
+    ).filter(PedidoModel.id == pedido_id).first()
     )
 
     if pedido is None:
@@ -84,8 +86,8 @@ def buscar_pedido(
     return pedido
 
 def deletar_pedido(
-    pedido_id: int,
-    db: Session
+        db:Session,
+        pedido_id: int
 ):
     
     pedido = db.query(PedidoModel).filter(
