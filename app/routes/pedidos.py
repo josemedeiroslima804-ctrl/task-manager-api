@@ -17,6 +17,9 @@ router = APIRouter(
     response_model=PedidoResponse,
     status_code=201
 )
+
+#Cria pedido
+
 def criar_pedido(
     pedido: PedidoCreate,
     db: Session = Depends(get_db),

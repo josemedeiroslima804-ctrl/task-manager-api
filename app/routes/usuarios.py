@@ -27,6 +27,8 @@ router = APIRouter(
     response_model=UsuarioResponse,
     status_code=201
 )
+
+
 def criar_usuario(
     usuario: UsuarioCreate,
     db: Session = Depends(get_db)

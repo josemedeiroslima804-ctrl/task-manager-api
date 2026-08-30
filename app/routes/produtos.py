@@ -40,8 +40,6 @@ def listar_produtos(
     return produto_service.listar_produtos(db)
 
 
-# Busca um Produto
-
 
 @router.get(
     "/{produto_id}",
@@ -59,8 +57,6 @@ def buscar_produto(
     )
 
 
-# Deleta um Produto
-
 
 @router.delete ("/{produto_id}",
                 
@@ -77,8 +73,6 @@ def deletar_produtos(
         produto_id
     )
 
-
-#atualizar produto
 
 
 @router.put("/{produto_id}",
