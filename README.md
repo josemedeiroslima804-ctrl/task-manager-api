@@ -1,8 +1,14 @@
 # 🥖 Sistema de Padaria API
 
-API REST desenvolvida em **Python** com **FastAPI** para gerenciamento de uma padaria.
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.139-green?logo=fastapi)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue?logo=postgresql)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-red)
+![JWT](https://img.shields.io/badge/JWT-Authentication-orange)
 
-Este projeto foi desenvolvido com o objetivo de praticar conceitos de desenvolvimento Back-end, arquitetura em camadas, autenticação com JWT e integração com banco de dados PostgreSQL.
+API REST desenvolvida em **Python** utilizando **FastAPI** para gerenciamento de uma padaria.
+
+O projeto foi criado com foco em estudos de desenvolvimento Back-end, aplicando conceitos de arquitetura em camadas, autenticação com JWT, banco de dados relacional e boas práticas de organização de código.
 
 ---
 
@@ -16,19 +22,18 @@ Este projeto foi desenvolvido com o objetivo de praticar conceitos de desenvolvi
 - JWT (python-jose)
 - Passlib (bcrypt)
 - Uvicorn
+- python-dotenv
 
 ---
 
 ## 📂 Estrutura do projeto
 
-```
+```text
 app/
-│
-├── models/          # Modelos do banco de dados
-├── schemas/         # Schemas do Pydantic
-├── routes/          # Rotas da API
-├── services/        # Regras de negócio
-│
+├── models/
+├── routes/
+├── schemas/
+├── services/
 ├── database.py
 ├── dependencies.py
 ├── security.py
@@ -37,68 +42,67 @@ app/
 
 ---
 
-## 🔐 Autenticação
+## 📌 Funcionalidades
 
-A API utiliza autenticação baseada em **JWT**.
+### 👤 Usuários
 
-Fluxo:
+![Login](images/swagger-login.png)
 
-1. Criar um usuário
-2. Fazer login
-3. Receber um Access Token
-4. Utilizar o token no botão **Authorize** do Swagger
-5. Acessar os endpoints protegidos
-
----
-
-## 📦 Funcionalidades
-
-### Usuários
-
-- Criar usuário
+- Cadastro de usuários
 - Login com JWT
-- Listar usuários
+- Senhas criptografadas com bcrypt
+- Rotas protegidas por autenticação
 
-### Produtos
+### 📦 Produtos
 
-- Criar produto
+![Produtos](images/swagger-produtos.png)
+
+- Criar produtos
 - Listar produtos
-- Buscar produto
+- Buscar produto por ID
 - Atualizar produto
 - Excluir produto
 
-### Clientes
+### 👥 Clientes
 
-- Criar cliente
+![Clientes](images/swagger-clientes.png)
+
+- Criar clientes
 - Listar clientes
-- Buscar cliente
+- Buscar cliente por ID
 - Atualizar cliente
 - Excluir cliente
 
-### Pedidos
+### 🛒 Pedidos
 
-- Criar pedido
+![Pedidos](images/swagger-pedidos.png)
+
+- Criar pedidos
 - Listar pedidos
 - Buscar pedido
 - Excluir pedido
-- Controle automático de estoque
+- Verificação de estoque
+- Relacionamento entre clientes e produtos
 
 ---
 
-## 🗄️ Banco de Dados
+## 🔐 Segurança
 
-O projeto utiliza PostgreSQL.
+O projeto utiliza:
 
-As tabelas são criadas automaticamente pelo SQLAlchemy na primeira execução.
+- Hash de senhas com bcrypt
+- Autenticação JWT
+- Variáveis de ambiente (.env)
+- Proteção das rotas por Token Bearer
 
 ---
 
-## ▶️ Como executar
+## ⚙️ Como executar
 
-### Clone o projeto
+Clone o projeto
 
 ```bash
-git clone https://github.com/josemedeiroslima804/task-manager-api.git
+git clone https://github.com/josemedeiroslima804-ctrl/task-manager-api.git
 ```
 
 Entre na pasta
@@ -133,6 +137,13 @@ Instale as dependências
 pip install -r requirements.txt
 ```
 
+Crie um arquivo `.env`
+
+```env
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/padaria_db
+SECRET_KEY=sua_chave_secreta
+```
+
 Execute a aplicação
 
 ```bash
@@ -142,6 +153,8 @@ uvicorn app.main:app --reload
 ---
 
 ## 📖 Documentação
+
+Após iniciar a aplicação:
 
 Swagger
 
@@ -157,28 +170,17 @@ http://127.0.0.1:8000/redoc
 
 ---
 
-## 🧠 Conceitos praticados
+## 🎯 Objetivo
 
-- Arquitetura em camadas
-- CRUD completo
-- Relacionamentos com SQLAlchemy
-- Injeção de dependências
+Este projeto foi desenvolvido com o objetivo de praticar:
+
+- Desenvolvimento de APIs REST
+- Organização de projetos em camadas
+- SQLAlchemy
+- PostgreSQL
 - Autenticação JWT
-- Hash de senhas
-- Services (camada de regras de negócio)
-- Validação com Pydantic
-- Organização de projeto FastAPI
-
----
-
-## 📌 Próximas melhorias
-
-- Testes automatizados
-- Docker
-- Alembic para migrações
-- Variáveis de ambiente (.env)
-- CI/CD com GitHub Actions
-- Deploy em nuvem
+- Relacionamentos entre tabelas
+- Boas práticas de Back-end
 
 ---
 
@@ -186,4 +188,8 @@ http://127.0.0.1:8000/redoc
 
 José Augusto Medeiros de Lima
 
-Projeto desenvolvido para estudos e composição de portfólio Back-end.
+GitHub:
+https://github.com/josemedeiroslima804-ctrl
+
+LinkedIn:
+https://www.linkedin.com/in/jos%C3%A9-augusto-medeiros/?isSelfProfile=true
